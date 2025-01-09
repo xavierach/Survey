@@ -5,6 +5,13 @@ import time
 from modules.nav import NavbarSurvey
 import json
 import os
+import boto3
+
+# Define the name of the S3 bucket and the file you want to upload
+bucket_name = 'survey-output'
+
+# Create a Boto3 S3 client
+s3 = boto3.client('s3')
 
 NavbarSurvey()
 
@@ -34,10 +41,14 @@ with st.form("Ouside_labour_force"):
         file_name = "data" + str(st.session_state.mem_no) + ".json"
         st.session_state.mem_no = st.session_state.mem_no + 1
         st.session_state.data["dob"] = str(st.session_state.data["dob"])
-        file_path = os.path.join('export', file_name)
-        # Write the data to the JSON file
-        with open(file_path, 'w') as json_file:
-            json.dump(st.session_state.data, json_file, indent=4)
+
+        # Upload the file to S3
+        json_string = json.dumps(st.session_state.data)
+
+        # Upload JSON data to S3 bucket
+        s3.put_object(Bucket=bucket_name, Key=file_name, Body=json_string)
+
+        print(f'{file_name} uploaded successfully to {bucket_name}.')
 
         st.session_state.data = {}
         time.sleep(5)
