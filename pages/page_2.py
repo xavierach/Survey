@@ -16,7 +16,7 @@ st.write(st.session_state.mem_no)
 
 if "data" not in st.session_state:
     st.session_state.data = {}
-    for i in ["name", "nric", "rls", "dob", "age", "sex", "race", "ident type", "stay", "sg stay", "marrital status", "acad & quali", "place", "certificates", "retirement", "curr status", "looking", "12months", "want to work", "availibility", "not looking", "worked"]:
+    for i in ["name", "nric", "rls", "dob", "age", "sex", "race", "ident type", "stay", "sg stay", "marital status", "acad & quali", "place", "certificates", "retirement", "curr status", "looking", "12months", "want to work", "availability", "not looking", "worked"]:
         st.session_state.data[i] = None
 
 with st.form(key="Demographic"):
@@ -59,10 +59,10 @@ with st.form(key="Demographic"):
         st.session_state.data["sg stay"] = st.radio("Where do you stay in Singapore", sg_stay, index=sg_stay.index(st.session_state.data.get("sg stay")))
 
     marrital_status = ["Single", "Married", "Widowed", "Divorced", "Separated"]
-    if st.session_state.data.get("marrital status") == None:
-            st.session_state.data["marrital status"] = st.radio("Marital Status", marrital_status, index=None)
+    if st.session_state.data.get("marital status") == None:
+            st.session_state.data["marital status"] = st.radio("Marital Status", marrital_status, index=None)
     else:
-        st.session_state.data["marrital status"] = st.radio("Marrital Status", marrital_status, index=marrital_status.index(st.session_state.data.get("marrital status")))
+        st.session_state.data["marital status"] = st.radio("Marital Status", marrital_status, index=marrital_status.index(st.session_state.data.get("marital status")))
 
     if st.form_submit_button(label="Continue"):
         st.switch_page("pages/page_3.py")

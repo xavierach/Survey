@@ -10,7 +10,7 @@ st.title("Answer Survey")
 
 if "data" not in st.session_state:
     st.session_state.data = {}
-    for i in ["name", "nric", "rls", "dob", "age", "sex", "race", "ident type", "stay", "sg stay", "marrital status", "acad & quali", "place", "certificates", "retirement", "curr status", "looking", "12months", "want to work", "availibility", "not working", "worked"]:
+    for i in ["name", "nric", "rls", "dob", "age", "sex", "race", "ident type", "stay", "sg stay", "marital status", "acad & quali", "place", "certificates", "retirement", "curr status", "looking", "12months", "want to work", "availability", "not working", "worked"]:
         st.session_state.data[i] = None
     
 with st.form(key="edu_and_emp"):
