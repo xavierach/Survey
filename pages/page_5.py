@@ -13,46 +13,108 @@ bucket_name = 'survey-output'
 # Create a Boto3 S3 client
 s3 = boto3.client('s3')
 
-NavbarSurvey()
 
-st.title("Answer Survey")
+def get_index(options, value):
+    if value in options:
+        return options.index(value)
+    else:
+        return None
+
+st.title("Section D")
+st.subheader("Persons Outside The Labour Force")
+
+reason_for_no_job = [
+    "Pursuing full-time / part-time studies (eg. Secondary, JC, ITE, Poly. Private Institution or University)",
+    "Pursuing part-time study",
+    "Awaiting the start of an academic year",
+    "Awaiting NS call-up",
+    "Awaiting examination results",
+    "Attending courses / training",
+    "Housework",
+    "Care for own children aged 12 and below",
+    "Care for own chldren aged above 12",
+    "Care for families (including grandchildren) / relative",
+    "Care for persons who are not family / relatives",
+    "Doing vouluntary / community work",
+    "Poor health",
+    "Permanently ill / disabled",
+    "Retired / No desire to work due to old age",
+    "Have sufficient financial support / means",
+    "Gave up active job search as I believe there is no suitable work available",
+    "Employers' discrimination (eg. prefer younger workers)",
+    "Lack necessary qualification, training, skills or experience",
+    "Taking a break",
+    "Foreigner without work pass",
+    "Others"
+]
+yn = ["Yes", "No"]
+when_leave = [
+    "Less than 1 month ago",
+    "1 month to less than 1 year ago",
+    "1 or more years ago"
+]
 
 if "data" not in st.session_state:
     st.session_state.data = {}
-    for i in ["name", "nric", "rls", "dob", "age", "sex", "race", "ident type", "stay", "sg stay", "marital status", "acad & quali", "place", "certificates", "retirement", "curr status", "looking", "12months", "want to work", "availability", "not working", "worked"]:
+    for i in ["name", "nric", "contact_no", "r/s", "sex", "race", "types", "sg_stay", "outside_stay", "marital_status", 
+        "acad", "part_2", "high_quali", "high", "high_sg", "sg_high_part", "voc/skill", "outside_sg_part", "high_skill", 
+        "skill_quali", "skill_loc", "sg_high_part2","outside_sg_part2", "voc/skill_part", "high_sg2", "retired", "retirement_age",
+
+        "employment_status", "job_title", "maintasks", "industry", "establishment", "full/part", "main_reason_parttime", "other_reason",
+        "willing", "available", "monthly_income", "hours", "extra", "extra_hours", "time_off", "time_off_no", "best_describes", "contract_length",
+
+        "length_of_looking", "while_looking", "worked_before", "last_occ", "last_main_tasks", "industry_last", "last_establishment",
+        "last_employment_status", "last_full/part", "last_monthly_income", "reason_for_leaving",
+
+        "reason_not_looking", "ever_worked", "when_left", "months", "years"
+    ]:
         st.session_state.data[i] = None
 
-with st.form("Ouside_labour_force"):
-    st.subheader("Persons Outside The Labour Force")
 
-    not_looking = ["Pursuing full-time study (eg. Secondary, JC, ITE, Poly, private institution or University)", "Pursuing part-time study", "Awaiting the start of academic year", "Awaiting NS call-up", "Awaiting examination results", "Attending courses/training", "Housework", "Care for own children aged 12 and below", "Care for familites (including own children aged above 12 and grandchildren) / relatives", "Care for persons who are not family/relatives", "Doing voluntary/community work", "Poor health", "Permanently ill/disabled", "Retired / No desire to work due to old age", "Have sufficient financial support/means", "Believes no suitable work available", "Employers' discrimination (eg. prefer younger workers)", "Taking a break", "Foreigner without work pass", "Others"]
-    if st.session_state.data.get("not looking") == None:
-        st.session_state.data["not looking"] = st.radio("What is our main reason for not working and not looking for a job?", not_looking, index=None)
-    else:
-        st.session_state.data["not looking"] = st.radio("What is our main reason for not working and not looking for a job?", not_looking, index=not_looking.index(st.session_state.data.get("not looking")))
+st.session_state.data["reason_not_looking"] = st.selectbox(
+    "What is your main reason for not working and not looking for a job?",
+    reason_for_no_job,
+    index=get_index(reason_for_no_job, st.session_state.data["reason_not_looking"])
+)
+
+st.session_state.data["ever_worked"] = st.selectbox(
+    "Have you ever worked before (excluding full-time National Service)?",
+    yn, 
+    index=get_index(yn, st.session_state.data["ever_worked"])
+)
+
+if st.session_state.data["ever_worked"] == True:
+    st.session_state.data["when_left"] = st.selectbox(
+        "When did you leave your last job?",
+        when_leave,
+        index=get_index(when_leave, st.session_state.data["when_left"])
+    )
+    if get_index(when_leave, st.session_state.data["ever_worked"]) == 1:
+        st.session_state.data["months"] = st.number_input(
+            "Please indicate number of months:",
+            value=st.session_state.data["months"]
+        )
+    elif get_index(when_leave, st.session_state.data["ever_worked"]) == 2:
+        st.session_state.data["years"] = st.number_input(
+            "Please indicate number of years:",
+            value=st.session_state.data["years"]
+        )
+
+
+if st.button("Submit form"):
+    file_name = "data" + str(st.session_state.mem_no) + ".json"
+    st.session_state.mem_no = st.session_state.mem_no + 1
+    st.session_state.data["dob"] = str(st.session_state.data["dob"])
+
+    # Upload the file to S3
+    json_string = json.dumps(st.session_state.data)
+
+    # Upload JSON data to S3 bucket
+    s3.put_object(Bucket=bucket_name, Key=file_name, Body=json_string)
+
+    print(f'{file_name} uploaded successfully to {bucket_name}.')
+
+    st.session_state.data = {}
+    time.sleep(5)
+    st.switch_page("pages/page_2.py")
     
-    YN = ["Yes", "No"]
-    if st.session_state.data.get("worked") == None:
-            st.session_state.data["worked"] = st.radio("Have you ever worked before (Excluding Full-Time National Service)?", YN, index=None)
-    else:
-        st.session_state.data["worked"] = st.radio("Have you ever worked before (Excluding Full-Time National Service)?", YN, index=YN.index(st.session_state.data.get("worked")))
-
-    if st.form_submit_button("Submit form"):
-        file_name = "data" + str(st.session_state.mem_no) + ".json"
-        st.session_state.mem_no = st.session_state.mem_no + 1
-        st.session_state.data["dob"] = str(st.session_state.data["dob"])
-
-        # Upload the file to S3
-        json_string = json.dumps(st.session_state.data)
-
-        # Upload JSON data to S3 bucket
-        s3.put_object(Bucket=bucket_name, Key=file_name, Body=json_string)
-
-        print(f'{file_name} uploaded successfully to {bucket_name}.')
-
-        st.session_state.data = {}
-        time.sleep(5)
-        st.switch_page("pages/page_2.py")
-    
-    if st.form_submit_button(label="Back"):
-        st.switch_page("pages/page_4.py")
