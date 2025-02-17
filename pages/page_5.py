@@ -7,6 +7,9 @@ import json
 import os
 import boto3
 
+if 'button_disabled' not in st.session_state:
+    st.session_state.button_disabled = True
+
 # Define the name of the S3 bucket and the file you want to upload
 bucket_name = 'survey-output'
 
@@ -56,15 +59,18 @@ when_leave = [
 
 if "data" not in st.session_state:
     st.session_state.data = {}
-    for i in ["name", "nric", "contact_no", "r/s", "sex", "race", "types", "sg_stay", "outside_stay", "marital_status", 
+    for i in [        
+        "name", "nric", "contact_no","dob","age", "r/s", "sex", "race", "types", "sg_stay", "inside_stay","outside_stay", "marital_status", 
         "acad", "part_2", "high_quali", "high", "high_sg", "sg_high_part", "voc/skill", "outside_sg_part", "high_skill", 
-        "skill_quali", "skill_loc", "sg_high_part2","outside_sg_part2", "voc/skill_part", "high_sg2", "retired", "retirement_age",
+        "skill_quali", "skill_loc", "sg_high_part2","outside_sg_part2", "voc/skill_part", "high_sg2", "retired", "retirement_age", "labour_force_status",
+        "not_working", "looking", "present", "expect", "secured", "12months", "available_in_2_weeks", "when_available",
 
         "employment_status", "job_title", "maintasks", "industry", "establishment", "full/part", "main_reason_parttime", "other_reason",
         "willing", "available", "monthly_income", "hours", "extra", "extra_hours", "time_off", "time_off_no", "best_describes", "contract_length",
 
         "length_of_looking", "while_looking", "worked_before", "last_occ", "last_main_tasks", "industry_last", "last_establishment",
-        "last_employment_status", "last_full/part", "last_monthly_income", "reason_for_leaving",
+        "last_employment_status", "last_full/part", "last_monthly_income", "reason_for_leaving", "reason_for_contract", "reason_for_temporary",
+        "reason_for_illness",
 
         "reason_not_looking", "ever_worked", "when_left", "months", "years"
     ]:
@@ -100,10 +106,13 @@ if st.session_state.data["ever_worked"] == True:
             value=st.session_state.data["years"]
         )
 
+if st.session_state.data["reason_not_looking"] and st.session_state.data["ever_worked"] == "Yes" and st.session_state.data["when_left"]:
+    st.session_state.button_disabled = False
+if st.session_state.data["ever_worked"] == "No":
+    st.session_state.button_disabled = False
 
-if st.button("Submit form"):
-    file_name = "data" + str(st.session_state.mem_no) + ".json"
-    st.session_state.mem_no = st.session_state.mem_no + 1
+if st.button(label="Submit", disabled=st.session_state.button_disabled):
+    file_name = "data.json"
     st.session_state.data["dob"] = str(st.session_state.data["dob"])
 
     # Upload the file to S3
@@ -115,6 +124,4 @@ if st.button("Submit form"):
     print(f'{file_name} uploaded successfully to {bucket_name}.')
 
     st.session_state.data = {}
-    time.sleep(5)
-    st.switch_page("pages/page_2.py")
-    
+    st.switch_page("pages/page_6.py")

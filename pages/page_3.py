@@ -4,6 +4,8 @@ import pandas as pd
 import time
 from modules.nav import NavbarSurvey
 
+if 'button_disabled' not in st.session_state:
+    st.session_state.button_disabled = True
 
 def get_index(options, value):
     if value in options:
@@ -65,15 +67,17 @@ st.subheader("EMPLOYED PERSONS")
 if "data" not in st.session_state:
     st.session_state.data = {}
     for i in [
-        "name", "nric", "contact_no", "r/s", "sex", "race", "types", "sg_stay", "outside_stay", "marital_status", 
+        "name", "nric", "contact_no","dob","age", "r/s", "sex", "race", "types", "sg_stay", "inside_stay","outside_stay", "marital_status", 
         "acad", "part_2", "high_quali", "high", "high_sg", "sg_high_part", "voc/skill", "outside_sg_part", "high_skill", 
-        "skill_quali", "skill_loc", "sg_high_part2","outside_sg_part2", "voc/skill_part", "high_sg2", "retired", "retirement_age",
+        "skill_quali", "skill_loc", "sg_high_part2","outside_sg_part2", "voc/skill_part", "high_sg2", "retired", "retirement_age", "labour_force_status",
+        "not_working", "looking", "present", "expect", "secured", "12months", "available_in_2_weeks", "when_available",
 
         "employment_status", "job_title", "maintasks", "industry", "establishment", "full/part", "main_reason_parttime", "other_reason",
         "willing", "available", "monthly_income", "hours", "extra", "extra_hours", "time_off", "time_off_no", "best_describes", "contract_length",
 
         "length_of_looking", "while_looking", "worked_before", "last_occ", "last_main_tasks", "industry_last", "last_establishment",
-        "last_employment_status", "last_full/part", "last_monthly_income", "reason_for_leaving",
+        "last_employment_status", "last_full/part", "last_monthly_income", "reason_for_leaving", "reason_for_contract", "reason_for_temporary",
+        "reason_for_illness",
 
         "reason_not_looking", "ever_worked", "when_left", "months", "years"
     ]:
@@ -86,7 +90,7 @@ if "data" not in st.session_state:
 st.write("Tip: If you were holding more than 1 job last week, please answer Qns 1-6 with reference to the job for which you usually work the longest hours.")
 st.write("")
 
-# A1
+# B1
 st.write("What was your employment status last week?")
 st.session_state.data["employment_status"] = st.selectbox(
     "Note: Self-employed persons refer to persons who operate their own business or trade. They may or may not employ paid employees. Examples include: taxi drivers, private-hire car drivers, food delivery riders, real estate agents, insurance sales agents, private babysitters/confinement ladies, private tutors, instructors, consultants, designers, persons who take on short-term, assignment-based work such as cleaners", 
@@ -94,23 +98,21 @@ st.session_state.data["employment_status"] = st.selectbox(
     index=get_index(employment_type, st.session_state.data["employment_status"]) 
 )
 
-# A2
+# B2
 st.write("")
 st.write("What was your occupation last week?")
 st.session_state.data["job_title"] = st.text_input("Job title", value=st.session_state.data["job_title"])
 st.session_state.data["maintasks"] = st.text_input("Please descirbe the main tasks / duties performed in your job")
 
-# A3
+# B3
 st.write("")
 st.write("What was the industry you were working in last week?")
 st.session_state.data["industry"] = st.text_input("(Please give the nature of business/main activity undertaken by your establishment)", value=st.session_state.data["industry"])
 
-# A4
+# B4
 st.session_state.data["establishment"] = st.text_input("What was the name of the establishment you were working in last week", value=st.session_state.data["establishment"])
 
-# if A18 is national serviceman, end survay here!
-
-# A5
+# B5
 st.write("")
 st.write("Was the job you were working in last week a full-time or part-time job?")
 st.session_state.data["full/part"] = st.selectbox(
@@ -120,7 +122,7 @@ st.session_state.data["full/part"] = st.selectbox(
     )
 
 if get_index(full_part_time, st.session_state.data["full/part"]) == 1:
-    # A6 
+    # B6 
     st.session_state.data["main_reason_parttime"] = st.selectbox(
         "What was the main reason that you were working part-time rather than full-time?",
         main_reason,
@@ -129,7 +131,7 @@ if get_index(full_part_time, st.session_state.data["full/part"]) == 1:
     if get_index(main_reason, st.session_state.data["main_reason_parttime"]) == 12:
         st.session_state.data["other_reason"] = st.text_input("Please specify", value=st.session_state.data["other_reason"])
 
-    # A7
+    # B7
     st.write("")
     st.write("Are you willing to work additional hours?")
     st.session_state.data["willing"] = st.selectbox(
@@ -138,7 +140,7 @@ if get_index(full_part_time, st.session_state.data["full/part"]) == 1:
         index=get_index(yn, st.session_state.data["willing"])
     )
 
-    # A8
+    # B8
     st.write("")
     st.write("Are you available for additional work?")
     if st.session_state.data["willing"] == "Yes":
@@ -153,7 +155,7 @@ if get_index(full_part_time, st.session_state.data["full/part"]) == 1:
 
 
 if st.session_state.data["willing"] == "No" or get_index(full_part_time, st.session_state.data["full/part"]) == 0 or st.session_state.data["available"] != None:
-    # A9
+    # B9
     st.write("")
     st.write("What was your gross monthly income from employment last month (excluding bonus or 13th month Annual Wage Supplement)?")
     st.session_state.data["monthly_income"] = st.number_input(
@@ -167,7 +169,7 @@ if st.session_state.data["willing"] == "No" or get_index(full_part_time, st.sess
         min_value=0
     )
 
-    # A10
+    # B10
     st.write("")
     st.write("How many hours a week do you typically work at your job(s), excluding meal breaks but including paid and unpaid overtime?")
     st.session_state.data["hours"] = st.number_input(
@@ -179,7 +181,7 @@ if st.session_state.data["willing"] == "No" or get_index(full_part_time, st.sess
                     min_value=0
     )
 
-    #A11
+    # B11
     st.write("")
     st.write("Last week, did you work any extra hours (eg. paid or unpaid overtime) that you do not usually work?")
     st.session_state.data["extra"] = st.selectbox(
@@ -194,7 +196,7 @@ if st.session_state.data["willing"] == "No" or get_index(full_part_time, st.sess
             min_value=0
             )
 
-    # A12   
+    # B12   
     st.session_state.data["time_off"] = st.selectbox(
         "Did you take any time off form work or were away on leave last week (eg.annual leave, childcare leave, off-in-lieu), public holiday, illness/injury or any other reason?",
         yn,
@@ -208,7 +210,7 @@ if st.session_state.data["willing"] == "No" or get_index(full_part_time, st.sess
             )
 
 if get_index(types, st.session_state.data["types"]) in [0,1]:
-    # A13
+    # B13
     st.write("")
     st.write("Which of the following best describes your type of employment?")
     st.session_state.data["best_describes"] = st.selectbox(
@@ -222,3 +224,11 @@ if get_index(types, st.session_state.data["types"]) in [0,1]:
             contract_length,
             index=get_index(contract_length, st.session_state.data["contract_length"])
         )
+
+if st.session_state.data["willing"] == "Yes" and st.session_state.data["available"]:
+    st.session_state.button_disabled = False
+if st.session_state.data["time_off_no"]:
+    st.session_state.button_disabled = False
+
+if st.button(label="Submit", disabled=st.session_state.button_disabled):
+    st.switch_page("pages/page_6.py")
