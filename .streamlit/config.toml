@@ -3,4 +3,4 @@ showSidebarNavigation = false
 
 [server]
 baseUrlPath = "/mlfs-mockup"
-enableCORS = true
+enableCORS = false
