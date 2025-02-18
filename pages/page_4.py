@@ -181,8 +181,8 @@ if st.session_state.data["worked_before"] == "Yes":
                     ''')
     st.session_state.data["last_monthly_income"] = st.number_input(
         "What was your gross monthly income from employment last month (excluding bonus or 13th month Annual Wage Supplement)?",
-        value=st.session_state.data["last_monthly_income"],
-        min_value=0
+        min_value=0,
+        value=st.session_state.data["last_monthly_income"]
     )
 
     # C10

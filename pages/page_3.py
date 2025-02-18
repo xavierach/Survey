@@ -157,28 +157,28 @@ if get_index(full_part_time, st.session_state.data["full/part"]) == 1:
 if st.session_state.data["willing"] == "No" or get_index(full_part_time, st.session_state.data["full/part"]) == 0 or st.session_state.data["available"] != None:
     # B9
     st.write("")
-    st.write("What was your gross monthly income from employment last month (excluding bonus or 13th month Annual Wage Supplement)?")
-    st.session_state.data["monthly_income"] = st.number_input(
-        st.markdown('''
+    st.markdown('''
                     Note: **Gross monthly income from employment** refers to income earned from employment in **all** jobs  
                     **For employees**, it refers to the gross monthly wages or salaries before deductions of employee CPF contributions and personal income tax. 
                     It comprises basic wages, overtime pay, commissions, tips and other allowances but **excludes** employer CPF contributions.  
                     **For self-employed persons**, gross monthly income refers to the average monthly profits from their business, trade or profession (ie. total receipts less business expenses incurred) before dudection of income tax.
-                    '''),
-        value=st.session_state.data["monthly_income"],
-        min_value=0
+                    ''')
+    st.session_state.data["monthly_income"] = st.number_input(
+        "What was your gross monthly income from employment last month (excluding bonus or 13th month Annual Wage Supplement)?",
+        min_value=0,
+        value=st.session_state.data["monthly_income"]
     )
 
     # B10
     st.write("")
-    st.write("How many hours a week do you typically work at your job(s), excluding meal breaks but including paid and unpaid overtime?")
+    st.markdown('''
+            **Note: This is regardless whether you are temporarily absent from work, on leave, or worked more/fewer hours than usual.**  
+            Tip: For self-employed work, please include both your regular paid and unpaid hours in a normal week of work (eg. hours spent looking for customers, doing background research prior to taking on an assignment, etc. Meal breaks should be excluded)
+            ''')
     st.session_state.data["hours"] = st.number_input(
-        st.markdown('''
-                    **Note: This is regardless whether you are temporarily absent from work, on leave, or worked more/fewer hours than usual.**  
-                    Tip: For self-employed work, please include both your regular paid and unpaid hours in a normal week of work (eg. hours spent looking for customers, doing background research prior to taking on an assignment, etc. Meal breaks should be excluded)
-                    '''),
-                    value=st.session_state.data["hours"],
-                    min_value=0
+        "How many hours a week do you typically work at your job(s), excluding meal breaks but including paid and unpaid overtime?",
+        value=st.session_state.data["hours"],
+        min_value=0
     )
 
     # B11
