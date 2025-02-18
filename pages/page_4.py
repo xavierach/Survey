@@ -92,7 +92,7 @@ if "data" not in st.session_state:
 
         "length_of_looking", "while_looking", "worked_before", "last_occ", "last_main_tasks", "industry_last", "last_establishment",
         "last_employment_status", "last_full/part", "last_monthly_income", "reason_for_leaving", "reason_for_contract", "reason_for_temporary",
-        "reason_for_illness",
+        "reason_for_illness", "chose_to_leave",
 
         "reason_not_looking", "ever_worked", "when_left", "months", "years"
     ]:
@@ -209,10 +209,10 @@ elif get_index(reasons, st.session_state.data["reason_for_leaving"]) == 5:
         index=get_index(reasons_for_temporary, st.session_state.data["reason_for_temporary"])
     )
     if get_index(reasons_for_temporary, st.session_state.data["reason_for_temporary"]) == 0:
-        st.session_state.data["chose_to_leave"] = st.number_input(
-            "",
+        st.session_state.data["chose_to_leave"] = st.selectbox(
+            "Why?",
             chose_to_leave,
-            value=st.session_state.data["chose_to_leave"]
+            index=get_index(chose_to_leave, st.session_state.data["chose_to_leave"])
         )
 
 elif get_index(reasons, st.session_state.data["reason_for_leaving"]) == 14:
@@ -230,12 +230,12 @@ if get_index(reasons, st.session_state.data["reason_for_leaving"]) not in [4, 5,
         when_leave,
         index=get_index(when_leave, st.session_state.data["when_left"])
     )
-    if get_index(when_leave, st.session_state.data["ever_worked"]) == 1:
+    if get_index(when_leave, st.session_state.data["when_left"]) == 1:
         st.session_state.data["months"] = st.number_input(
             "Please indicate number of months:",
             value=st.session_state.data["months"]
         )
-    elif get_index(when_leave, st.session_state.data["ever_worked"]) == 2:
+    elif get_index(when_leave, st.session_state.data["when_left"]) == 2:
         st.session_state.data["years"] = st.number_input(
             "Please indicate number of years:",
             value=st.session_state.data["years"]

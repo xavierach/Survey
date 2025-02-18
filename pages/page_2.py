@@ -161,7 +161,7 @@ if "data" not in st.session_state:
 
         "length_of_looking", "while_looking", "worked_before", "last_occ", "last_main_tasks", "industry_last", "last_establishment",
         "last_employment_status", "last_full/part", "last_monthly_income", "reason_for_leaving", "reason_for_contract", "reason_for_temporary",
-        "reason_for_illness",
+        "reason_for_illness", "chose_to_leave",
 
         "reason_not_looking", "ever_worked", "when_left", "months", "years"
     ]:
