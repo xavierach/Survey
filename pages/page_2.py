@@ -37,10 +37,10 @@ def question8validation():
         st.session_state.button_disabled = False
     elif (st.session_state.data["outside_stay"] and (st.session_state.data["outside_stay"] == outside_stay[1] or st.session_state.data["outside_stay"] == outside_stay[2])):
         st.session_state.button_disabled = False
-    elif (st.session_state.data["inside_stay"] and (st.session_state.data["inside_stay"] == inside_stay[1])):
-        st.session_state.button_disabled = False
+    elif (st.session_state.data["inside_stay"] and st.session_state.data["inside_stay"] == inside_stay[1]):
+        st.session_state.button_disabled = False    
     else:
-        st.session_state.button_disabled = True    
+        st.session_state.button_disabled = True
     ageValidation()
 
 def ageValidation():    
@@ -98,7 +98,7 @@ r_s = [
 sex = ["Male", "Female"]
 race =["Chinese", "Malay", "Indian", "Eurasian", "Others"]
 types = [
-    "Singapore Citizen", " Singapore Permanent Resident (PR)", "Foreigner on Employment Pass", 
+    "Singapore Citizen", " Singapore Permanent Resident (PR)", "Foreigner on Employment Pass, Personalised Employment Pass, EntrePass, Tech.Pass or Overseas Networks and Expertise Pass (ONE Pass)", 
     "Foreigner on S Pass", "Foreigner on Work Permit", "Foreigner on Student's Pass", 
     "Foreigner on Social Visit pass (eg. Long-Term Visit Pass(LTVP), Long-Term Visit Pass Plus(LTVP+)",
     "Foreigner on Dependent's Pass", "New born foreign baby or child without identification document yet", 
@@ -124,12 +124,13 @@ sg_high_quali = [
     "Other private education institutions in Singapore [eg. SIM Global Education (SIM GE), Kaplan Higher Education Institution/Academy, PSB Academy, Management Development Institute of Singapore (MDIS)], including those awarded by their overseas partner universities/institutions"
 ]
 labour_force_status = [
-"Working (including employee or self-employed and those in full-time, part-time, permanent, fied-term contract or casual/on-call employment)",
-"Undergoing full-time National Service (NS)",
-"Schooling but currently undergoing paid internship/traineeship/apprenticeship",
-"Working while awaiting examination results or NS call-up",
-"Working while schooling",
-"Not working"
+    "Working (including employee or self-employed and those in full-time, part-time, permanent, fied-term contract or casual/on-call employment)",
+    "Undergoing full-time National Service (NS)",
+    "Schooling but currently working in a vacation job",
+    "Schooling but currently undergoing paid internship/traineeship/apprenticeship",
+    "Working while awaiting examination results or NS call-up",
+    "Working while schooling",
+    "Not working"
 ]
 sg_stay = ["Singapore", "Outside Singapore"]
 yn = ["Yes", "No"]
@@ -229,26 +230,25 @@ st.session_state.data["sg_stay"] = st.radio(
     index = get_index(sg_stay, st.session_state.data.get("sg_stay"))
 )
 
-if (st.session_state.data["sg_stay"]==sg_stay[1]):    
+if (st.session_state.data["sg_stay"]==sg_stay[1]): 
+    st.session_state.data["inside_stay"] = None  
     st.session_state.data["outside_stay"] = st.radio(
         "Outside Singapore", 
         outside_stay,
         on_change=question8validation(),
         index = get_index(outside_stay, st.session_state.data.get("outside_stay"))
     )
-
-    if (st.session_state.data["outside_stay"] == outside_stay[1] or st.session_state.data["outside_stay"] == outside_stay[2]):
-        st.session_state.button_disabled = False
-    else:
-        st.session_state.button_disabled = True
+    question8validation()
 
 elif (st.session_state.data["sg_stay"]==sg_stay[0]):
+    st.session_state.data["outside_stay"] = None
     st.session_state.data["inside_stay"] = st.radio(
         "Staying in", 
         inside_stay,
         on_change=question8validation(),
         index = get_index(inside_stay, st.session_state.data.get("inside_stay"))
     )
+    question8validation()
 else:
     st.write("")
 
@@ -319,7 +319,7 @@ if st.session_state.data["outside_sg_part"] == True or st.session_state.data["hi
 if st.session_state.data["voc/skill"] == "Yes":
     # A14
     st.session_state.data["high_skill"] = st.text_input(
-        "What is the highest vocational or skills ceritficate/qualification you have attained?",
+        "What is the highest vocational or skills certificate/qualification you have attained?",
         value = st.session_state.data["high_skill"]
     )
 
@@ -335,8 +335,9 @@ if st.session_state.data["high_skill"] != None:
 
 if st.session_state.data["sg_high_part2"] == True:
     # A16
+    sg_high_quali.append("SkillsFuture Singapore (SSG) [including the former Singapore Workforce Development Agency (WDA)]")
     st.session_state.data["high_sg2"] = st.selectbox(
-        "Which institution awarded your highest vocational or skills certicate / qualification attained?",
+        "Which institution awarded your highest vocational or skills certificate / qualification attained?",
         sg_high_quali,
         index = get_index(sg_high_quali, st.session_state.data["high_sg2"])
     )
@@ -364,13 +365,14 @@ if ((st.session_state.data["age"] is not None
         )
 
 # A18
-st.session_state.data["labour_force_status"] = st.selectbox(
-    "What is your current labour force status?",
-    labour_force_status,
-    on_change=labourForceValidation(),
-    index = get_index(labour_force_status, st.session_state.data["labour_force_status"])
-)
-labourForceValidation()
+if st.session_state.data["inside_stay"] == inside_stay[0] or st.session_state.data["outside_stay"] == outside_stay[0]:
+    st.session_state.data["labour_force_status"] = st.selectbox(
+        "What is your current labour force status?",
+        labour_force_status,
+        on_change=labourForceValidation(),
+        index = get_index(labour_force_status, st.session_state.data["labour_force_status"])
+    )
+    labourForceValidation()
 
 # A19 if not working
 if st.session_state.data["labour_force_status"] == "Not working":
@@ -419,8 +421,8 @@ if (st.session_state.data["looking"] == "Yes"
     or st.session_state.data["secured"] == "No"
     or st.session_state.data["expect"]):
     if get_index(expectation_to_start, st.session_state.data["expect"]) == 0:
-        st.session_state.data["availble_in_2_weeks"] = "Yes"
-    st.session_state.data["availble_in_2_weeks"] = st.selectbox(
+        st.session_state.data["available_in_2_weeks"] = "Yes"
+    st.session_state.data["available_in_2_weeks"] = st.selectbox(
         "Are you available to work in the next 2 weeks?",
         yn,
         index=get_index(yn, st.session_state.data["available_in_2_weeks"])
@@ -446,13 +448,13 @@ if st.button(label="Submit", disabled=st.session_state.button_disabled):
         st.switch_page("pages/page_6.py")
 
     if ((st.session_state.data["looking"] == "Yes" and st.session_state.data["available_in_2_weeks"] == "Yes")
-        or (st.session_state.data["looking"] == "No" and st.session_state.data["available_in_2_weeks"] == "Yes" and get_index(st.session_state.data["expect"]) in [0, 1, 2])):
+        or (st.session_state.data["looking"] == "No" and st.session_state.data["available_in_2_weeks"] == "Yes" and get_index(expectation_to_start, st.session_state.data["expect"]) in [0, 1, 2])):
         st.switch_page("pages/page_4.py")
     elif (st.session_state.data["available_in_2_weeks"] == "No" 
-          or (st.session_state.data["looking"] == "Yes" and st.session_state.data["available_in_2_weeks"] == "Yes"
-              and (st.session_state.data["present"] == "No" or st.session_state.data["secured"] == "No" or get_index(st.session_state.data["expect"]) == 3))):
+          or (st.session_state.data["looking"] == "No" and st.session_state.data["available_in_2_weeks"] == "Yes"
+              and (st.session_state.data["present"] == "No" or st.session_state.data["secured"] == "No" or get_index(expectation_to_start, st.session_state.data["expect"]) == 3))):
         st.switch_page("pages/page_5.py")
-    elif get_index(labour_force_status, st.session_state.data["labour_force_status"]) not in [2, 5]:
+    elif get_index(labour_force_status, st.session_state.data["labour_force_status"]) not in [2, 6]:
         st.switch_page("pages/page_3.py")
     elif get_index(labour_force_status, st.session_state.data["labour_force_status"]) == 1:
         st.switch_page("pages/page_7.py")
